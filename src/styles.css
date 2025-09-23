@@ -146,6 +146,12 @@ body {
   min-width: 220px; padding: 10px; box-shadow: 0 10px 20px rgba(0,0,0,.12);
   z-index: 20;
 }
+/* dark theme menu look */
+:root[data-theme="dark"] .menu {
+  background: #1b202a;
+  border-color: #2a3140;
+  box-shadow: 0 10px 20px rgba(0,0,0,.7);
+}
 .menuTitle { font-weight: 700; font-size: 13px; margin: 2px 0 8px; }
 .menuList { display: grid; gap: 6px; }
 .menuCheck { display: flex; gap: 8px; align-items: center; font-size: 13px; }
@@ -222,6 +228,8 @@ body {
   display: flex;
   flex-direction: column;
 }
+.modalWide { width: min(1200px, 96vw); }   /* wider when we embed a live demo */
+
 .modalHeader {
   display: flex; justify-content: space-between; align-items: center;
   padding: 12px 14px; border-bottom: 1px solid var(--border);
@@ -240,7 +248,7 @@ body {
 .deployLog { padding: 14px; display: grid; gap: 6px; }
 .deployLog .ok { color: #10b981; font-weight: 700; }
 
-/* ===== Embedded deployment dashboard (zoom / fit) ===== */
+/* ===== Embedded dashboards (zoom / fit) ===== */
 .embedHeader { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
 .embedHeader .zoomGroup { display: inline-flex; gap: 6px; margin-right: 8px; }
 
@@ -253,6 +261,7 @@ body {
   background: var(--panel);
   margin-top: 8px;
 }
+.modalViewport { height: 70vh; }   /* height when inside Deploy modal */
 
 .embedCanvas {
   --s: 0.85;
