@@ -22,10 +22,25 @@ type Block = {
   Icon: React.ComponentType<{ size?: number }>
   mockDiagram: string[]
   tags: string[]
-  addedAt: number // mock recency value (larger = more recent)
+  addedAt: number
 }
 
 type Core = { name: string; logo: string; invertOnDark?: boolean; large?: boolean }
+
+/* =========================
+   External demo URLs
+========================= */
+// Deployments dashboard (right-hand tab)
+const DEPLOY_DEMO_URL = 'http://107.21.91.141/index.html'
+const BASE_WIDTH  = 1440
+const BASE_HEIGHT = 1800
+
+// Live demo to show AFTER "Deploy" on a flow
+// 🔥 ADDED: webcrawler → local HTML under public/demos/
+const LIVE_DEMOS: Record<string,string> = {
+  'cust-support': 'http://ec2-98-88-50-46.compute-1.amazonaws.com:3001',
+  'webcrawler': '/demos/openscholar-scientify-demo.html',
+}
 
 /* =========================
    Data
@@ -106,20 +121,12 @@ const coreItems: Core[] = [
   { name: 'Anthropic',        logo: anthropicLogo, invertOnDark: true, large: true },
 ]
 
-// Deployment dashboard embed URL
-const DEPLOY_DEMO_URL = 'http://107.21.91.141/index.html'
-const BASE_WIDTH  = 1440
-const BASE_HEIGHT = 1800
-
-/* =========================
-   App
-========================= */
 export default function App() {
   const [tab, setTab] = useState<Tab>('flows')
   const [q, setQ] = useState('')
   const [dark, setDark] = useState(false)
 
-  // Flow detail & modals
+  // selection & modals
   const [selectedFlow, setSelectedFlow] = useState<Block | null>(null)
   const [showDeployModal, setShowDeployModal] = useState(false)
   const [readmeContent, setReadmeContent] = useState<string | null>(null)
@@ -151,7 +158,7 @@ export default function App() {
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
   }, [dark])
 
-  // Close menus on outside click
+  // close menus on outside click
   useEffect(() => {
     const close = (e: MouseEvent) => {
       const target = e.target as HTMLElement
@@ -162,7 +169,7 @@ export default function App() {
     return () => document.removeEventListener('click', close)
   }, [])
 
-  // Derived list
+  // derived list
   const filteredAndSortedFlows = useMemo(() => {
     let list = flowBlocks
       .filter(b => b.name.toLowerCase().includes(q.toLowerCase()))
@@ -171,12 +178,12 @@ export default function App() {
     list = [...list].sort((a, b) => {
       if (sortKey === 'az') return a.name.localeCompare(b.name)
       if (sortKey === 'za') return b.name.localeCompare(a.name)
-      return b.addedAt - a.addedAt // recent first
+      return b.addedAt - a.addedAt
     })
     return list
   }, [q, selectedTags, sortKey])
 
-  // Fit/zoom calc
+  // deploy tab zoom/fit
   const recomputeScale = React.useCallback(() => {
     if (!viewportRef.current) return
     const vw = viewportRef.current.clientWidth
@@ -351,6 +358,45 @@ console.log('Running ${flow.name} (mock) ->', run({ foo: 'bar' }))`
   }
 
   function FlowDetail({ flow }: { flow: Block }) {
+    // ---- live embed after deploy (only for flows that have LIVE_DEMOS[flow.id]) ----
+    const [livePhase, setLivePhase] = useState<'log'|'live'>('log')
+    const liveViewportRef = useRef<HTMLDivElement>(null)
+    const [liveScale, setLiveScale] = useState(0.9)
+    const [zoomMode, setZoomMode] = useState<'manual'|'fit'|'fitW'|'fitH'>('manual')
+
+    const LIVE_BASE_W = 1440
+    const LIVE_BASE_H = 1000
+
+    const recomputeLiveScale = React.useCallback(() => {
+      if (!liveViewportRef.current) return
+      const vw = liveViewportRef.current.clientWidth
+      const vh = liveViewportRef.current.clientHeight
+      if (zoomMode === 'fit') {
+        const s = Math.min(vw / LIVE_BASE_W, vh / LIVE_BASE_H)
+        setLiveScale(+s.toFixed(2))
+      } else if (zoomMode === 'fitW') {
+        setLiveScale(+(vw / LIVE_BASE_W).toFixed(2))
+      } else if (zoomMode === 'fitH') {
+        setLiveScale(+(vh / LIVE_BASE_H).toFixed(2))
+      }
+    }, [zoomMode])
+
+    useEffect(() => {
+      const onResize = () => recomputeLiveScale()
+      window.addEventListener('resize', onResize)
+      if (livePhase === 'live') recomputeLiveScale()
+      return () => window.removeEventListener('resize', onResize)
+    }, [recomputeLiveScale, livePhase])
+
+    // when modal opens for this flow, auto-switch from log -> live
+    useEffect(() => {
+      if (showDeployModal && LIVE_DEMOS[flow.id]) {
+        setLivePhase('log')
+        const t = setTimeout(() => setLivePhase('live'), 1200)
+        return () => clearTimeout(t)
+      }
+    }, [showDeployModal, flow.id])
+
     return (
       <>
         <div className="detailHeader">
@@ -384,21 +430,82 @@ console.log('Running ${flow.name} (mock) ->', run({ foo: 'bar' }))`
           </div>
         </div>
 
-        {/* Deploy modal */}
+        {/* Deploy modal with optional live embed */}
         {showDeployModal && (
           <div className="modal">
-            <div className="modalCard">
+            <div className={`modalCard ${LIVE_DEMOS[flow.id] ? 'modalWide' : ''}`}>
               <div className="modalHeader">
                 <div className="h3">Deploy: {flow.name}</div>
-                <button className="btn" onClick={() => setShowDeployModal(false)}>Close</button>
+                <div className="row">
+                  {LIVE_DEMOS[flow.id] && livePhase === 'live' && (
+                    <a className="btn" href={LIVE_DEMOS[flow.id]} target="_blank" rel="noreferrer">
+                      Open in new tab
+                    </a>
+                  )}
+                  <button className="btn" onClick={() => { setShowDeployModal(false); setLivePhase('log'); }}>
+                    Close
+                  </button>
+                </div>
               </div>
-              <div className="deployLog">
-                <div>• Validating configuration for <b>{flow.name}</b>…</div>
-                <div>• Reserving resources…</div>
-                <div>• Loading model weights…</div>
-                <div>• Starting containers…</div>
-                <div className="ok">✓ Deployment complete (mock)</div>
-              </div>
+
+              {/* Without live demo → normal mock log */}
+              {!LIVE_DEMOS[flow.id] && (
+                <div className="deployLog">
+                  <div>• Validating configuration for <b>{flow.name}</b>…</div>
+                  <div>• Reserving resources…</div>
+                  <div>• Loading model weights…</div>
+                  <div>• Starting containers…</div>
+                  <div className="ok">✓ Deployment complete (mock)</div>
+                </div>
+              )}
+
+              {/* With live demo */}
+              {LIVE_DEMOS[flow.id] && (
+                <>
+                  {livePhase === 'log' && (
+                    <div className="deployLog">
+                      <div>• Validating configuration for <b>{flow.name}</b>…</div>
+                      <div>• Reserving resources…</div>
+                      <div>• Loading model weights…</div>
+                      <div>• Starting containers…</div>
+                      <div className="ok">✓ Deployment complete (mock). Launching live demo…</div>
+                    </div>
+                  )}
+
+                  {livePhase === 'live' && (
+                    <>
+                      <div className="embedHeader" style={{padding:'10px 14px'}}>
+                        <div className="h3" style={{margin:0}}>Live Demo</div>
+                        <div className="row">
+                          <div className="zoomGroup">
+                            <button className="btn" onClick={() => { setZoomMode('manual'); setLiveScale(s => Math.max(0.5, +(s - 0.1).toFixed(2))) }}>−</button>
+                            <button className="btn" onClick={() => { setZoomMode('manual'); setLiveScale(0.9) }}>{Math.round(liveScale*100)}%</button>
+                            <button className="btn" onClick={() => { setZoomMode('manual'); setLiveScale(s => Math.min(1.5, +(s + 0.1).toFixed(2))) }}>+</button>
+                          </div>
+                          <div className="zoomGroup">
+                            <button className="btn" onClick={() => { setZoomMode('fit');  recomputeLiveScale() }}>Fit</button>
+                            <button className="btn" onClick={() => { setZoomMode('fitW'); recomputeLiveScale() }}>Fit W</button>
+                            <button className="btn" onClick={() => { setZoomMode('fitH'); recomputeLiveScale() }}>Fit H</button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="embedViewport modalViewport" ref={liveViewportRef}>
+                        <div className="embedCanvas" style={{ ['--s' as any]: liveScale }}>
+                          <iframe
+                            className="embedFrame scaled"
+                            src={LIVE_DEMOS[flow.id]}
+                            title="Live Demo"
+                            loading="lazy"
+                            referrerPolicy="no-referrer"
+                            sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
             </div>
           </div>
         )}
