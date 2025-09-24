@@ -1,4 +1,3 @@
-import React from 'react'
 
 // ✅ Update these paths if your filenames differ
 import agentLogo from './assets/agent-logo.png'

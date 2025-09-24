@@ -276,7 +276,7 @@ console.log('Running ${flow.name} (mock) ->', run({ foo:'bar' }))`
     const [livePhase, setLivePhase] = useState<'log'|'live'>('log')
     const liveViewportRef = useRef<HTMLDivElement>(null)
     const [liveScale, setLiveScale] = useState(0.9)
-    const [zoomMode, setZoomMode] = useState<'manual'|'fit'|'fitW'|'fitH'>('manual')
+    const [zoomMode] = useState<'manual'|'fit'|'fitW'|'fitH'>('manual')
     const LIVE_BASE_W = 1440, LIVE_BASE_H = 1000
 
     const recomputeLiveScale = React.useCallback(() => {
@@ -371,7 +371,7 @@ console.log('Running ${flow.name} (mock) ->', run({ foo:'bar' }))`
                       <div>• Reserving resources…</div>
                       <div>• Loading model weights…</div>
                       <div>• Starting containers…</div>
-                      <div className="ok">✓ Deployment complete (mock). Launching live demo…</div>
+                      <div className="ok">✓ Deployment complete (mock). Launching …</div>
                     </div>
                   )}
                   {livePhase==='live' && (
@@ -546,13 +546,13 @@ console.log('Running ${flow.name} (mock) ->', run({ foo:'bar' }))`
             {tab === 'deploy' && (
               <>
                 <div className="spread">
-                  <div className="row"><span className="badge">Demo for Red Hat</span></div>
+                  <div className="row"><span className="badge"></span></div>
                 </div>
 
                 <h2 className="h2">Deployments</h2>
 
                 <div className="embedHeader">
-                  <h3 className="h3">Live Demo</h3>
+                  <h3 className="h3"></h3>
                   <div className="row">
                     <div className="zoomGroup">
                       <button className="btn" onClick={() => { setZoomMode('manual'); setScale(s => Math.max(0.5, +(s - 0.1).toFixed(2))) }}>−</button>
@@ -580,7 +580,7 @@ console.log('Running ${flow.name} (mock) ->', run({ foo:'bar' }))`
                 )}
 
                 <div className="muted" style={{ marginTop: 8, fontSize: 12 }}>
-                  All actions are mocked. No backend involved.
+                  
                 </div>
               </>
             )}
