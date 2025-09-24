@@ -336,7 +336,7 @@ console.log('Running ${flow.name} (mock) ->', run({ foo:'bar' }))`
           <div className="muted" style={{marginTop:8}}>
             {(isWebcrawler || isCustSupport)
               ? '(Static PNG mock — replace when updated.)'
-              : '(Mock diagrams are auto-generated. Replace with real PNG/SVG when ready.)'}
+              : ''}
           </div>
         </div>
 
