@@ -7,11 +7,18 @@ import {
 
 import logo from './assets/logo-misalabs.png'
 
-// MisaCores logos
+// logos
 import openaiLogo from './assets/openai-logo.png'
 import deepseekLogo from './assets/deepseek-logo.png'
 import anthropicLogo from './assets/anthropic-logo.png'
 import ollamaLogo from './assets/ollama-logo.png'
+import metaLogo from './assets/meta-logo.png'
+import mistralLogo from './assets/mistral-logo.png'
+import agentLogo from './assets/agent-logo.png'
+
+// NEW: flow diagrams (PNG)
+import webcrawlerFlowImg from './assets/webcrawler-flow.png'
+import customerServiceFlowImg from './assets/customerservice-flow.png'
 
 type Tab = 'flows' | 'cores' | 'deploy'
 type SortKey = 'az' | 'za' | 'recent'
@@ -30,13 +37,10 @@ type Core = { name: string; logo: string; invertOnDark?: boolean; large?: boolea
 /* =========================
    External demo URLs
 ========================= */
-// Deployments dashboard (right-hand tab)
 const DEPLOY_DEMO_URL = 'http://107.21.91.141/index.html'
 const BASE_WIDTH  = 1440
 const BASE_HEIGHT = 1800
 
-// Live demo to show AFTER "Deploy" on a flow
-// 🔥 ADDED: webcrawler → local HTML under public/demos/
 const LIVE_DEMOS: Record<string,string> = {
   'cust-support': 'http://ec2-98-88-50-46.compute-1.amazonaws.com:3001',
   'webcrawler': '/demos/openscholar-scientify-demo.html',
@@ -46,164 +50,117 @@ const LIVE_DEMOS: Record<string,string> = {
    Data
 ========================= */
 const flowBlocks: Block[] = [
-  {
-    id: 'cust-support',
-    name: 'AI Customer Service Assistant',
-    Icon: Headphones,
-    mockDiagram: ['User UI', 'Agent', 'Retriever', 'Vector DB', 'LLM'],
-    tags: ['assistant', 'retrieval', 'nlp'],
-    addedAt: 9,
-  },
-  {
-    id: 'grant-recommender',
-    name: 'Grant Recommender',
-    Icon: BadgeDollarSign,
-    mockDiagram: ['Intake', 'Scoring', 'Rerank', 'Report'],
-    tags: ['recsys', 'analytics'],
-    addedAt: 7,
-  },
-  {
-    id: 'webcrawler',
-    name: 'WebCrawler',
-    Icon: Bug,
-    mockDiagram: ['Crawler', 'Parser', 'Vector DB', 'Reranker', 'API'],
-    tags: ['ingestion', 'retrieval'],
-    addedAt: 10,
-  },
-  {
-    id: 'ticketing',
-    name: 'Ticketing System',
-    Icon: Ticket,
-    mockDiagram: ['Webhook', 'Classifier', 'Router', 'Knowledge Base'],
-    tags: ['workflow', 'assistant'],
-    addedAt: 6,
-  },
-  {
-    id: 'doc-parser',
-    name: 'Document Parser',
-    Icon: FileText,
-    mockDiagram: ['Upload', 'OCR', 'Chunker', 'Embedder', 'Index'],
-    tags: ['ingestion', 'nlp'],
-    addedAt: 8,
-  },
-  {
-    id: 'lead-scoring',
-    name: 'Lead Scoring',
-    Icon: TrendingUp,
-    mockDiagram: ['Events', 'Features', 'Model', 'Score', 'CRM'],
-    tags: ['recsys', 'analytics'],
-    addedAt: 5,
-  },
-  {
-    id: 'webhook',
-    name: 'Webhook',
-    Icon: WebhookIcon,
-    mockDiagram: ['Source', 'Validator', 'Transformer', 'Sink'],
-    tags: ['ingestion', 'workflow'],
-    addedAt: 4,
-  },
-  {
-    id: 'sentiment',
-    name: 'Sentiment Analysis',
-    Icon: Activity,
-    mockDiagram: ['Stream', 'Language ID', 'Sentiment', 'Dashboard'],
-    tags: ['nlp', 'analytics'],
-    addedAt: 3,
-  },
+  { id:'cust-support', name:'AI Customer Service Assistant', Icon:Headphones, mockDiagram:['User UI','Agent','Retriever','Vector DB','LLM'], tags:['assistant','retrieval','nlp'], addedAt:9 },
+  { id:'grant-recommender', name:'Grant Recommender', Icon:BadgeDollarSign, mockDiagram:['Intake','Scoring','Rerank','Report'], tags:['recsys','analytics'], addedAt:7 },
+  { id:'webcrawler', name:'WebCrawler', Icon:Bug, mockDiagram:['Crawler','Parser','Vector DB','Reranker','API'], tags:['ingestion','retrieval'], addedAt:10 },
+  { id:'ticketing', name:'Ticketing System', Icon:Ticket, mockDiagram:['Webhook','Classifier','Router','Knowledge Base'], tags:['workflow','assistant'], addedAt:6 },
+  { id:'doc-parser', name:'Document Parser', Icon:FileText, mockDiagram:['Upload','OCR','Chunker','Embedder','Index'], tags:['ingestion','nlp'], addedAt:8 },
+  { id:'lead-scoring', name:'Lead Scoring', Icon:TrendingUp, mockDiagram:['Events','Features','Model','Score','CRM'], tags:['recsys','analytics'], addedAt:5 },
+  { id:'webhook', name:'Webhook', Icon:WebhookIcon, mockDiagram:['Source','Validator','Transformer','Sink'], tags:['ingestion','workflow'], addedAt:4 },
+  { id:'sentiment', name:'Sentiment Analysis', Icon:Activity, mockDiagram:['Stream','Language ID','Sentiment','Dashboard'], tags:['nlp','analytics'], addedAt:3 },
 ]
 
-// Cores
-const coreItems: Core[] = [
-  { name: 'Llama 4 chat',     logo: ollamaLogo },
-  { name: 'Llama 3 instruct', logo: ollamaLogo },
-  { name: 'OpenAI GPT-5',     logo: openaiLogo },
-  { name: 'DeepSeek v3',      logo: deepseekLogo },
-  { name: 'Anthropic',        logo: anthropicLogo, invertOnDark: true, large: true },
+// ---- Cores split into two sections ----
+const runnerCores: Core[] = [
+  { name: 'Meta Llama 3 8B Instruct', logo: metaLogo },
+  { name: 'Mistral 7B Instruct V0.2', logo: mistralLogo },
+  { name: 'GPT-OSS 20B',              logo: openaiLogo },
+  { name: 'DeepSeek V3.1',            logo: deepseekLogo },
+  // keep your originals visible in “View More”
+  { name: 'OpenAI GPT-5',             logo: openaiLogo },
+  { name: 'Llama 4 chat',             logo: ollamaLogo },
+  { name: 'Llama 3 instruct',         logo: ollamaLogo },
+  { name: 'Anthropic',                logo: anthropicLogo, invertOnDark:true, large:true },
 ]
+
+const agentCores: Core[] = [
+  { name: 'WebCrawl Agent',        logo: agentLogo },
+  { name: 'Customer Service Agent',logo: agentLogo },
+]
+
+// mock spec/bench (unchanged)
+const BENCH = {
+  specs: [
+    { theme:'nvidia', badge:'NVIDIA A10',  label:'MisaLabs Optimized',
+      kv:{'GPU Memory':'24 GB','Instance Type':'VM.GPU.A10.1','vCPUs':'15','RAM':'240 GB','FP16 TFLOPS':'31.2','Cost/hour':'$1.28'} },
+    { theme:'amd',    badge:'AMD MI300X',  label:'MisaLabs Optimized',
+      kv:{'GPU Memory':'192 GB','Instance Type':'BM.GPU.MI300X.8','vCPUs':'96','RAM':'2048 GB','FP16 TFLOPS':'1307.4','Cost/hour':'$8.50'} },
+    { theme:'nvidia', badge:'NVIDIA A100', label:'MisaLabs Optimized',
+      kv:{'GPU Memory':'40 GB','Instance Type':'BM.GPU.A100.4','vCPUs':'64','RAM':'1024 GB','FP16 TFLOPS':'312','Cost/hour':'$4.00'} },
+  ],
+  metrics: [
+    { tint:'green', title:'NVIDIA A10 Performance',
+      rows:{'First Token Latency':'245ms','Average Throughput':'42 tok/s','P99 Latency':'320ms','Concurrent Users':'8','Memory Bandwidth':'600 GB/s','Cost per 1M tokens':'$0.24'} },
+    { tint:'red',   title:'AMD MI300X Performance',
+      rows:{'First Token Latency':'52ms','Average Throughput':'284 tok/s','P99 Latency':'78ms','Concurrent Users':'64','Memory Bandwidth':'5.3 TB/s','Cost per 1M tokens':'$0.15'} },
+    { tint:'blue',  title:'NVIDIA A100 Performance',
+      rows:{'First Token Latency':'98ms','Average Throughput':'127 tok/s','P99 Latency':'145ms','Concurrent Users':'32','Memory Bandwidth':'1.6 TB/s','Cost per 1M tokens':'$0.18'} },
+  ],
+}
 
 export default function App() {
   const [tab, setTab] = useState<Tab>('flows')
   const [q, setQ] = useState('')
   const [dark, setDark] = useState(false)
 
-  // selection & modals
   const [selectedFlow, setSelectedFlow] = useState<Block | null>(null)
   const [showDeployModal, setShowDeployModal] = useState(false)
   const [readmeContent, setReadmeContent] = useState<string | null>(null)
   const [codeContent, setCodeContent] = useState<string | null>(null)
 
-  // Filter & sort
+  // NEW: cores UX
+  const [selectedCore, setSelectedCore] = useState<Core | null>(null)
+  const [showAllRunners, setShowAllRunners] = useState(false) // controls “View More”
+
+  // flows filter/sort
   const ALL_TAGS = useMemo(() => {
-    const s = new Set<string>()
-    flowBlocks.forEach(f => f.tags.forEach(t => s.add(t)))
-    return Array.from(s).sort()
+    const s = new Set<string>(); flowBlocks.forEach(f => f.tags.forEach(t => s.add(t))); return Array.from(s).sort()
   }, [])
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [sortKey, setSortKey] = useState<SortKey>('recent')
   const [filterOpen, setFilterOpen] = useState(false)
   const [sortOpen, setSortOpen] = useState(false)
 
-  // Deploy tab iframe zoom/fit
+  // deploy iframe
   const [showDemo, setShowDemo] = useState(true)
   const [scale, setScale] = useState(0.85)
   const [zoomMode, setZoomMode] = useState<'manual'|'fit'|'fitW'|'fitH'>('manual')
   const viewportRef = useRef<HTMLDivElement>(null)
 
   // theme
-  useEffect(() => {
-    const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches
-    setDark(prefersDark)
-  }, [])
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
-  }, [dark])
+  useEffect(() => { setDark(window.matchMedia?.('(prefers-color-scheme: dark)').matches) }, [])
+  useEffect(() => { document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light') }, [dark])
 
-  // close menus on outside click
+  // close menus
   useEffect(() => {
     const close = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-      if (!target.closest('.menu') && !target.closest('.btnFilter')) setFilterOpen(false)
-      if (!target.closest('.menu') && !target.closest('.btnSort')) setSortOpen(false)
+      const t = e.target as HTMLElement
+      if (!t.closest('.menu') && !t.closest('.btnFilter')) setFilterOpen(false)
+      if (!t.closest('.menu') && !t.closest('.btnSort')) setSortOpen(false)
     }
-    document.addEventListener('click', close)
-    return () => document.removeEventListener('click', close)
+    document.addEventListener('click', close); return () => document.removeEventListener('click', close)
   }, [])
 
-  // derived list
+  // flows list derived
   const filteredAndSortedFlows = useMemo(() => {
     let list = flowBlocks
       .filter(b => b.name.toLowerCase().includes(q.toLowerCase()))
       .filter(b => selectedTags.every(t => b.tags.includes(t)))
-
-    list = [...list].sort((a, b) => {
-      if (sortKey === 'az') return a.name.localeCompare(b.name)
-      if (sortKey === 'za') return b.name.localeCompare(a.name)
-      return b.addedAt - a.addedAt
-    })
+    list = [...list].sort((a, b) => sortKey==='az'?a.name.localeCompare(b.name):sortKey==='za'?b.name.localeCompare(a.name):b.addedAt-a.addedAt)
     return list
   }, [q, selectedTags, sortKey])
 
-  // deploy tab zoom/fit
+  // deploy fit/zoom
   const recomputeScale = React.useCallback(() => {
     if (!viewportRef.current) return
-    const vw = viewportRef.current.clientWidth
-    const vh = viewportRef.current.clientHeight
-    if (zoomMode === 'fit') {
-      const s = Math.min(vw / BASE_WIDTH, vh / BASE_HEIGHT)
-      setScale(+s.toFixed(2))
-    } else if (zoomMode === 'fitW') {
-      setScale(+(vw / BASE_WIDTH).toFixed(2))
-    } else if (zoomMode === 'fitH') {
-      setScale(+(vh / BASE_HEIGHT).toFixed(2))
-    }
+    const vw = viewportRef.current.clientWidth, vh = viewportRef.current.clientHeight
+    if (zoomMode === 'fit')  setScale(+Math.min(vw/BASE_WIDTH, vh/BASE_HEIGHT).toFixed(2))
+    if (zoomMode === 'fitW') setScale(+(vw/BASE_WIDTH).toFixed(2))
+    if (zoomMode === 'fitH') setScale(+(vh/BASE_HEIGHT).toFixed(2))
   }, [zoomMode])
-  useEffect(() => {
-    const onResize = () => recomputeScale()
-    window.addEventListener('resize', onResize)
-    recomputeScale()
-    return () => window.removeEventListener('resize', onResize)
-  }, [recomputeScale, showDemo, dark])
+  useEffect(() => { const onR=()=>recomputeScale(); window.addEventListener('resize', onR); recomputeScale(); return ()=>window.removeEventListener('resize', onR) }, [recomputeScale, showDemo, dark])
 
+  // helpers (flows) — unchanged
   const buildReadme = (flow: Block) => {
     const bullets = flow.mockDiagram.map(s => `- ${s}`).join('\n')
     return `# ${flow.name} — README (Mock)
@@ -223,23 +180,15 @@ ${bullets}
 3. Start the dev server
 4. Run the demo`
   }
-
-  const buildCode = (flow: Block) => {
-    return `// ${flow.name} — mock code
+  const buildCode = (flow: Block) => `// ${flow.name} — mock code
 type Step = (input: any) => any
-
 const pipeline: Step[] = [
   ${flow.mockDiagram.map(s => `// ${s}`).join('\n  ')}
 ]
-
 export function run(input: any) {
-  return pipeline.reduce((acc, _step) => {
-    return { ...acc, tick: (acc.tick || 0) + 1 }
-  }, { tick: 0, input })
+  return pipeline.reduce((acc, _step) => ({ ...acc, tick:(acc.tick||0)+1 }), { tick:0, input })
 }
-
-console.log('Running ${flow.name} (mock) ->', run({ foo: 'bar' }))`
-  }
+console.log('Running ${flow.name} (mock) ->', run({ foo:'bar' }))`
 
   /* ---------- Flows UI ---------- */
   function FlowGrid() {
@@ -247,23 +196,14 @@ console.log('Running ${flow.name} (mock) ->', run({ foo: 'bar' }))`
       <>
         <div className="spread">
           <div className="row">
-            <button className="btn primary" onClick={()=>alert('(Mock) New Flow')}>
-              <Plus size={16}/> New Flow
-            </button>
-            <button className="btn" onClick={()=>alert('(Mock) Import')}>
-              <Upload size={16}/> Import
-            </button>
-            <button className="btn" onClick={()=>alert('(Mock) Add to Flow')}>
-              <Link2 size={16}/> Add to Flow
-            </button>
+            <button className="btn primary" onClick={()=>alert('(Mock) New Flow')}><Plus size={16}/> New Flow</button>
+            <button className="btn" onClick={()=>alert('(Mock) Import')}><Upload size={16}/> Import</button>
+            <button className="btn" onClick={()=>alert('(Mock) Add to Flow')}><Link2 size={16}/> Add to Flow</button>
           </div>
 
           <div className="row">
-            {/* Filter button + menu */}
             <div className="menuWrap">
-              <button className="btn btnFilter" onClick={()=>setFilterOpen(o=>!o)}>
-                <SlidersHorizontal size={16}/> Filter
-              </button>
+              <button className="btn btnFilter" onClick={()=>setFilterOpen(o=>!o)}><SlidersHorizontal size={16}/> Filter</button>
               {filterOpen && (
                 <div className="menu">
                   <div className="menuTitle">Filter by tags</div>
@@ -272,15 +212,8 @@ console.log('Running ${flow.name} (mock) ->', run({ foo: 'bar' }))`
                       const active = selectedTags.includes(tag)
                       return (
                         <label key={tag} className="menuCheck">
-                          <input
-                            type="checkbox"
-                            checked={active}
-                            onChange={(e)=> {
-                              setSelectedTags(prev =>
-                                e.target.checked ? [...prev, tag] : prev.filter(t=>t!==tag)
-                              )
-                            }}
-                          />
+                          <input type="checkbox" checked={active}
+                            onChange={(e)=> setSelectedTags(prev => e.target.checked ? [...prev, tag] : prev.filter(t=>t!==tag))}/>
                           <span>{tag}</span>
                         </label>
                       )
@@ -294,28 +227,17 @@ console.log('Running ${flow.name} (mock) ->', run({ foo: 'bar' }))`
               )}
             </div>
 
-            {/* Sort button + menu */}
             <div className="menuWrap">
-              <button className="btn btnSort" onClick={()=>setSortOpen(o=>!o)}>
-                Sort <ChevronDown size={16}/>
-              </button>
+              <button className="btn btnSort" onClick={()=>setSortOpen(o=>!o)}>Sort <ChevronDown size={16}/></button>
               {sortOpen && (
                 <div className="menu">
                   <div className="menuTitle">Sort by</div>
                   <div className="menuList">
-                    {([
-                      ['az','A → Z'],
-                      ['za','Z → A'],
-                      ['recent','Recently added'],
-                    ] as [SortKey,string][]).map(([key,label])=>(
-                      <button
-                        key={key}
-                        className={`menuItem ${sortKey===key ? 'active': ''}`}
-                        onClick={()=>{ setSortKey(key); setSortOpen(false) }}
-                      >
-                        {label}
-                      </button>
-                    ))}
+                    {([['az','A → Z'],['za','Z → A'],['recent','Recently added']] as [SortKey,string][])
+                      .map(([key,label])=>(
+                        <button key={key} className={`menuItem ${sortKey===key?'active':''}`}
+                          onClick={()=>{ setSortKey(key); setSortOpen(false) }}>{label}</button>
+                      ))}
                   </div>
                 </div>
               )}
@@ -323,17 +245,12 @@ console.log('Running ${flow.name} (mock) ->', run({ foo: 'bar' }))`
           </div>
         </div>
 
-        {/* Active filter chips */}
         {selectedTags.length>0 && (
           <div className="chipRow">
             {selectedTags.map(tag=>(
-              <span key={tag} className="chip">
-                {tag}
-                <button className="chipX" onClick={()=>setSelectedTags(prev=>prev.filter(t=>t!==tag))}>
-                  <X size={12}/>
-                </button>
-              </span>
-            ))}
+              <span key={tag} className="chip">{tag}
+                <button className="chipX" onClick={()=>setSelectedTags(prev=>prev.filter(t=>t!==tag))}><X size={12}/></button>
+              </span>))}
             <button className="btn btnTiny" onClick={()=>setSelectedTags([])}>Clear all</button>
           </div>
         )}
@@ -342,11 +259,8 @@ console.log('Running ${flow.name} (mock) ->', run({ foo: 'bar' }))`
 
         <div className="grid">
           {filteredAndSortedFlows.map(({ id, name, Icon }) => (
-            <div
-              key={id}
-              className="cardItem blockCard hoverable"
-              onClick={() => setSelectedFlow(flowBlocks.find(f => f.id === id) || null)}
-            >
+            <div key={id} className="cardItem blockCard hoverable"
+                 onClick={() => setSelectedFlow(flowBlocks.find(f => f.id === id) || null)}>
               <div className="blockIcon"><Icon size={28} /></div>
               <div className="blockTitle">{name}</div>
             </div>
@@ -357,98 +271,88 @@ console.log('Running ${flow.name} (mock) ->', run({ foo: 'bar' }))`
     )
   }
 
+  /* ---------- Flow detail (uses PNG for 2 flows) ---------- */
   function FlowDetail({ flow }: { flow: Block }) {
-    // ---- live embed after deploy (only for flows that have LIVE_DEMOS[flow.id]) ----
     const [livePhase, setLivePhase] = useState<'log'|'live'>('log')
     const liveViewportRef = useRef<HTMLDivElement>(null)
     const [liveScale, setLiveScale] = useState(0.9)
     const [zoomMode, setZoomMode] = useState<'manual'|'fit'|'fitW'|'fitH'>('manual')
-
-    const LIVE_BASE_W = 1440
-    const LIVE_BASE_H = 1000
+    const LIVE_BASE_W = 1440, LIVE_BASE_H = 1000
 
     const recomputeLiveScale = React.useCallback(() => {
       if (!liveViewportRef.current) return
-      const vw = liveViewportRef.current.clientWidth
-      const vh = liveViewportRef.current.clientHeight
-      if (zoomMode === 'fit') {
-        const s = Math.min(vw / LIVE_BASE_W, vh / LIVE_BASE_H)
-        setLiveScale(+s.toFixed(2))
-      } else if (zoomMode === 'fitW') {
-        setLiveScale(+(vw / LIVE_BASE_W).toFixed(2))
-      } else if (zoomMode === 'fitH') {
-        setLiveScale(+(vh / LIVE_BASE_H).toFixed(2))
-      }
+      const vw = liveViewportRef.current.clientWidth, vh = liveViewportRef.current.clientHeight
+      if (zoomMode==='fit')  setLiveScale(+Math.min(vw/LIVE_BASE_W, vh/LIVE_BASE_H).toFixed(2))
+      if (zoomMode==='fitW') setLiveScale(+(vw/LIVE_BASE_W).toFixed(2))
+      if (zoomMode==='fitH') setLiveScale(+(vh/LIVE_BASE_H).toFixed(2))
     }, [zoomMode])
 
-    useEffect(() => {
-      const onResize = () => recomputeLiveScale()
-      window.addEventListener('resize', onResize)
-      if (livePhase === 'live') recomputeLiveScale()
-      return () => window.removeEventListener('resize', onResize)
-    }, [recomputeLiveScale, livePhase])
+    useEffect(() => { const onR=()=>recomputeLiveScale(); window.addEventListener('resize', onR); if (livePhase==='live') recomputeLiveScale(); return ()=>window.removeEventListener('resize', onR) }, [recomputeLiveScale, livePhase])
 
-    // when modal opens for this flow, auto-switch from log -> live
     useEffect(() => {
       if (showDeployModal && LIVE_DEMOS[flow.id]) {
-        setLivePhase('log')
-        const t = setTimeout(() => setLivePhase('live'), 1200)
-        return () => clearTimeout(t)
+        setLivePhase('log'); const t=setTimeout(()=>setLivePhase('live'), 1200); return ()=>clearTimeout(t)
       }
     }, [showDeployModal, flow.id])
+
+    const isWebcrawler = flow.id === 'webcrawler'
+    const isCustSupport = flow.id === 'cust-support'
 
     return (
       <>
         <div className="detailHeader">
-          <button className="btn back-button" onClick={() => setSelectedFlow(null)}>
-            <ArrowLeft size={16}/> Back
-          </button>
+          <button className="btn back-button" onClick={() => setSelectedFlow(null)}><ArrowLeft size={16}/> Back</button>
           <h2 className="h2">MisaFlow: {flow.name}</h2>
           <div className="row">
-            <button className="btn outline" onClick={() => setReadmeContent(buildReadme(flow))}>
-              Readme
-            </button>
-            <button className="btn outline" onClick={() => setCodeContent(buildCode(flow))}>
-              Code
-            </button>
+            <button className="btn outline" onClick={() => setReadmeContent(buildReadme(flow))}>Readme</button>
+            <button className="btn outline" onClick={() => setCodeContent(buildCode(flow))}>Code</button>
             <button className="btn primary" onClick={() => setShowDeployModal(true)}>Deploy</button>
           </div>
         </div>
 
+        {/* Diagram section */}
         <div className="diagramCard">
           <div className="diagramTitle">Architecture Diagram</div>
-          <div className="diagramCanvas">
-            {flow.mockDiagram.map((n, i) => (
-              <React.Fragment key={i}>
-                <div className="node">{n}</div>
-                {i < flow.mockDiagram.length - 1 && <div className="arrow">→</div>}
-              </React.Fragment>
-            ))}
-          </div>
+            {(isWebcrawler || isCustSupport) ? (
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <div className="flowImgFrame">
+                  <img
+                    className="flowImg"
+                    src={isWebcrawler ? webcrawlerFlowImg : customerServiceFlowImg}
+                    alt={isWebcrawler ? 'WebCrawler Flow' : 'Customer Service Flow'}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="diagramCanvas">
+                {flow.mockDiagram.map((n, i) => (
+                  <React.Fragment key={i}>
+                    <div className="node">{n}</div>
+                    {i < flow.mockDiagram.length - 1 && <div className="arrow">→</div>}
+                  </React.Fragment>
+                ))}
+              </div>
+            )}
           <div className="muted" style={{marginTop:8}}>
-            (Mock diagrams are auto-generated. Replace with real PNG/SVG when ready.)
+            {(isWebcrawler || isCustSupport)
+              ? '(Static PNG mock — replace when updated.)'
+              : '(Mock diagrams are auto-generated. Replace with real PNG/SVG when ready.)'}
           </div>
         </div>
 
-        {/* Deploy modal with optional live embed */}
         {showDeployModal && (
           <div className="modal">
             <div className={`modalCard ${LIVE_DEMOS[flow.id] ? 'modalWide' : ''}`}>
               <div className="modalHeader">
                 <div className="h3">Deploy: {flow.name}</div>
                 <div className="row">
-                  {LIVE_DEMOS[flow.id] && livePhase === 'live' && (
-                    <a className="btn" href={LIVE_DEMOS[flow.id]} target="_blank" rel="noreferrer">
-                      Open in new tab
-                    </a>
+                  {LIVE_DEMOS[flow.id] && livePhase==='live' && (
+                    <a className="btn" href={LIVE_DEMOS[flow.id]} target="_blank" rel="noreferrer">Open in new tab</a>
                   )}
-                  <button className="btn" onClick={() => { setShowDeployModal(false); setLivePhase('log'); }}>
-                    Close
-                  </button>
+                  <button className="btn" onClick={() => setShowDeployModal(false)}>Close</button>
                 </div>
               </div>
 
-              {/* Without live demo → normal mock log */}
               {!LIVE_DEMOS[flow.id] && (
                 <div className="deployLog">
                   <div>• Validating configuration for <b>{flow.name}</b>…</div>
@@ -459,10 +363,9 @@ console.log('Running ${flow.name} (mock) ->', run({ foo: 'bar' }))`
                 </div>
               )}
 
-              {/* With live demo */}
               {LIVE_DEMOS[flow.id] && (
                 <>
-                  {livePhase === 'log' && (
+                  {livePhase==='log' && (
                     <div className="deployLog">
                       <div>• Validating configuration for <b>{flow.name}</b>…</div>
                       <div>• Reserving resources…</div>
@@ -471,38 +374,14 @@ console.log('Running ${flow.name} (mock) ->', run({ foo: 'bar' }))`
                       <div className="ok">✓ Deployment complete (mock). Launching live demo…</div>
                     </div>
                   )}
-
-                  {livePhase === 'live' && (
-                    <>
-                      <div className="embedHeader" style={{padding:'10px 14px'}}>
-                        <div className="h3" style={{margin:0}}>Live Demo</div>
-                        <div className="row">
-                          <div className="zoomGroup">
-                            <button className="btn" onClick={() => { setZoomMode('manual'); setLiveScale(s => Math.max(0.5, +(s - 0.1).toFixed(2))) }}>−</button>
-                            <button className="btn" onClick={() => { setZoomMode('manual'); setLiveScale(0.9) }}>{Math.round(liveScale*100)}%</button>
-                            <button className="btn" onClick={() => { setZoomMode('manual'); setLiveScale(s => Math.min(1.5, +(s + 0.1).toFixed(2))) }}>+</button>
-                          </div>
-                          <div className="zoomGroup">
-                            <button className="btn" onClick={() => { setZoomMode('fit');  recomputeLiveScale() }}>Fit</button>
-                            <button className="btn" onClick={() => { setZoomMode('fitW'); recomputeLiveScale() }}>Fit W</button>
-                            <button className="btn" onClick={() => { setZoomMode('fitH'); recomputeLiveScale() }}>Fit H</button>
-                          </div>
-                        </div>
+                  {livePhase==='live' && (
+                    <div className="embedViewport modalViewport" ref={liveViewportRef}>
+                      <div className="embedCanvas" style={{ ['--s' as any]: liveScale }}>
+                        <iframe className="embedFrame scaled" src={LIVE_DEMOS[flow.id]} title="Live Demo"
+                                loading="lazy" referrerPolicy="no-referrer"
+                                sandbox="allow-scripts allow-same-origin allow-forms allow-popups"/>
                       </div>
-
-                      <div className="embedViewport modalViewport" ref={liveViewportRef}>
-                        <div className="embedCanvas" style={{ ['--s' as any]: liveScale }}>
-                          <iframe
-                            className="embedFrame scaled"
-                            src={LIVE_DEMOS[flow.id]}
-                            title="Live Demo"
-                            loading="lazy"
-                            referrerPolicy="no-referrer"
-                            sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-                          />
-                        </div>
-                      </div>
-                    </>
+                    </div>
                   )}
                 </>
               )}
@@ -510,39 +389,77 @@ console.log('Running ${flow.name} (mock) ->', run({ foo: 'bar' }))`
           </div>
         )}
 
-        {/* README modal */}
         {readmeContent && (
-          <div className="modal">
-            <div className="modalCard">
-              <div className="modalHeader">
-                <div className="h3">README</div>
-                <button className="btn" onClick={() => setReadmeContent(null)}>Close</button>
-              </div>
-              <div className="docWrap">
-                <pre>{readmeContent}</pre>
-              </div>
-            </div>
-          </div>
+          <div className="modal"><div className="modalCard">
+            <div className="modalHeader"><div className="h3">README</div>
+              <button className="btn" onClick={() => setReadmeContent(null)}>Close</button></div>
+            <div className="docWrap"><pre>{readmeContent}</pre></div>
+          </div></div>
         )}
 
-        {/* CODE modal */}
         {codeContent && (
-          <div className="modal">
-            <div className="modalCard">
-              <div className="modalHeader">
-                <div className="h3">Code Sample</div>
-                <button className="btn" onClick={() => setCodeContent(null)}>Close</button>
-              </div>
-              <div className="docWrap">
-                <pre>{codeContent}</pre>
-              </div>
-            </div>
-          </div>
+          <div className="modal"><div className="modalCard">
+            <div className="modalHeader"><div className="h3">Code Sample</div>
+              <button className="btn" onClick={() => setCodeContent(null)}>Close</button></div>
+            <div className="docWrap"><pre>{codeContent}</pre></div>
+          </div></div>
         )}
       </>
     )
   }
 
+  /* ---------- Model details ---------- */
+  function ModelDetail({ core }: { core: Core }) {
+    return (
+      <div className="modelDetailWrap">
+        <div className="detailHeader">
+          <button className="btn back-button" onClick={() => setSelectedCore(null)}><ArrowLeft size={16}/> Back</button>
+          <h2 className="h2">MisaCores</h2>
+          <div className="row">
+            <button className="btn primary" onClick={() => setTab('deploy')}>Go to Deployment Dashboard</button>
+          </div>
+        </div>
+
+        <div className="modelTitleBar">
+          <div className="logoBox"><img src={core.logo} alt="" /></div>
+          <div className="titleText">{core.name}</div>
+        </div>
+
+        <div className="specGrid">
+          {BENCH.specs.map((s, i) => (
+            <div key={i} className="specCard">
+              <div className="specTop">
+                <div className={`chipSmall ${s.theme}`}>{s.badge}</div>
+                <div className="miniBadge">{s.label}</div>
+              </div>
+              <div className="kv">
+                {Object.entries(s.kv).map(([k,v]) => (
+                  <div className="kvRow" key={k}><div className="k">{k}</div><div className="v">{v}</div></div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="benchTitleBar">Misa Meter Benchmark Results</div>
+
+        <div className="metricGrid">
+          {BENCH.metrics.map((m,i)=>(
+            <div className="metricCard" key={i}>
+              <div className="metricTitle"><span className={`dot ${m.tint}`}/> {m.title}</div>
+              <div className="kv">
+                {Object.entries(m.rows).map(([k,v])=>(
+                  <div className="kvRow" key={k}><div className="k">{k}</div><div className="v">{v}</div></div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  /* ---------- UI ---------- */
   return (
     <div className="app">
       <div className="card">
@@ -557,51 +474,72 @@ console.log('Running ${flow.name} (mock) ->', run({ foo: 'bar' }))`
           </button>
         </div>
 
-        {/* Layout */}
         <div className="layout">
-          {/* Sidebar */}
           <aside className="sidebar">
-            <div className="logo">
-              <img src={logo} alt="misalabs" className="logo-img" />
-            </div>
+            <div className="logo"><img src={logo} alt="misalabs" className="logo-img" /></div>
             <nav className="nav">
-              <button className={tab==='flows' ? 'active' : ''} onClick={()=>{setTab('flows'); setSelectedFlow(null)}}>
+              <button className={tab==='flows' ? 'active' : ''} onClick={()=>{setTab('flows'); setSelectedFlow(null); setSelectedCore(null)}}>
                 <GitBranch size={18}/> MisaFlows
               </button>
-              <button className={tab==='cores' ? 'active' : ''} onClick={()=>setTab('cores')}>
+              <button className={tab==='cores' ? 'active' : ''} onClick={()=>{setTab('cores'); setSelectedFlow(null)}}>
                 <Cpu size={18}/> MisaCores
               </button>
-              <button className={tab==='deploy' ? 'active' : ''} onClick={()=>setTab('deploy')}>
+              <button className={tab==='deploy' ? 'active' : ''} onClick={()=>{setTab('deploy'); setSelectedFlow(null); setSelectedCore(null)}}>
                 <LayoutDashboard size={18}/> Deployment Dashboard
               </button>
             </nav>
           </aside>
 
-          {/* Main */}
           <main className="content">
-            {tab === 'flows'   && (selectedFlow ? <FlowDetail flow={selectedFlow}/> : <FlowGrid/>)}
+            {tab === 'flows' && (selectedFlow ? <FlowDetail flow={selectedFlow}/> : <FlowGrid/>)}
 
-            {tab === 'cores'   && (
+            {tab === 'cores' && (
               <>
-                <h2 className="h2">MisaCores</h2>
-                <div className="grid">
-                  {coreItems.map(({ name, logo, invertOnDark, large }) => (
-                    <div
-                      key={name}
-                      className="cardItem blockCard hoverable"
-                      onClick={() => alert(`(Mock) Selected core: ${name}`)}
-                    >
-                      <div className="blockIcon">
-                        <img
-                          src={logo}
-                          alt={name}
-                          className={`coreLogo ${invertOnDark ? 'invertOnDark' : ''} ${large ? 'large' : ''}`}
-                        />
-                      </div>
-                      <div className="blockTitle">{name}</div>
+                {!selectedCore ? (
+                  <>
+                    <h2 className="h2">MisaCores</h2>
+
+                    {/* Model Runner Microservices */}
+                    <div className="sectionHeader">
+                      <div className="sectionTitle">Model Runner Microservices</div>
+                      <button className="btn pill outline" onClick={()=>setShowAllRunners(v=>!v)}>
+                        {showAllRunners ? 'View Less' : 'View More'} <ChevronDown size={14} style={{ marginLeft: 4, transform: showAllRunners ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform .2s' }}/>
+                      </button>
                     </div>
-                  ))}
-                </div>
+
+                    <div className="grid">
+                      {(showAllRunners ? runnerCores : runnerCores.slice(0,4)).map((c) => (
+                        <div key={c.name} className="cardItem blockCard hoverable"
+                             onClick={() => setSelectedCore(c)}>
+                          <div className="blockIcon">
+                            <img src={c.logo} alt={c.name}
+                                 className={`coreLogo ${c.invertOnDark ? 'invertOnDark' : ''} ${c.large ? 'large' : ''}`} />
+                          </div>
+                          <div className="blockTitle">{c.name}</div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Agent Microservices */}
+                    <div className="sectionHeader" style={{marginTop:18}}>
+                      <div className="sectionTitle">Agent Microservices</div>
+                    </div>
+
+                    <div className="grid">
+                      {agentCores.map(c => (
+                        <div key={c.name} className="cardItem blockCard hoverable"
+                             onClick={() => setTab('deploy')}>
+                          <div className="blockIcon">
+                            <img src={c.logo} alt={c.name} className="coreLogo"/>
+                          </div>
+                          <div className="blockTitle">{c.name}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <ModelDetail core={selectedCore}/>
+                )}
               </>
             )}
 
@@ -613,7 +551,6 @@ console.log('Running ${flow.name} (mock) ->', run({ foo: 'bar' }))`
 
                 <h2 className="h2">Deployments</h2>
 
-                {/* Embedded demo: zoom + fit controls */}
                 <div className="embedHeader">
                   <h3 className="h3">Live Demo</h3>
                   <div className="row">
@@ -627,9 +564,7 @@ console.log('Running ${flow.name} (mock) ->', run({ foo: 'bar' }))`
                       <button className="btn" onClick={() => { setZoomMode('fitW'); recomputeScale() }}>Fit W</button>
                       <button className="btn" onClick={() => { setZoomMode('fitH'); recomputeScale() }}>Fit H</button>
                     </div>
-                    <button className="btn" onClick={() => setShowDemo(s => !s)}>
-                      {showDemo ? 'Hide' : 'Show'}
-                    </button>
+                    <button className="btn" onClick={() => setShowDemo(s => !s)}>{showDemo ? 'Hide' : 'Show'}</button>
                     <a className="btn" href={DEPLOY_DEMO_URL} target="_blank" rel="noreferrer">Open in new tab</a>
                   </div>
                 </div>
@@ -637,14 +572,9 @@ console.log('Running ${flow.name} (mock) ->', run({ foo: 'bar' }))`
                 {showDemo && (
                   <div className="embedViewport" ref={viewportRef}>
                     <div className="embedCanvas" style={{ ['--s' as any]: scale }}>
-                      <iframe
-                        className="embedFrame scaled"
-                        src={DEPLOY_DEMO_URL}
-                        title="Embedded Demo"
-                        loading="lazy"
-                        referrerPolicy="no-referrer"
-                        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-                      />
+                      <iframe className="embedFrame scaled" src={DEPLOY_DEMO_URL} title="Embedded Demo"
+                              loading="lazy" referrerPolicy="no-referrer"
+                              sandbox="allow-scripts allow-same-origin allow-forms allow-popups" />
                     </div>
                   </div>
                 )}
