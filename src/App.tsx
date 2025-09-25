@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Search, Moon, Sun, GitBranch, Cpu, LayoutDashboard, Plus, Upload, Link2,
-  SlidersHorizontal, ChevronDown, Headphones, BadgeDollarSign, Bug, Ticket,
-  FileText, TrendingUp, Webhook as WebhookIcon, Activity, ArrowLeft, X
+  SlidersHorizontal, ChevronDown, Headphones, HeartPulse, Ticket, ListCheck, Sparkles, FileCog,
+  FileText, TrendingUp, ArrowLeft, X,
+  Bug, Activity, Webhook as WebhookIcon 
 } from 'lucide-react'
 
 import logo from './assets/logo-misalabs.png'
@@ -15,8 +16,11 @@ import ollamaLogo from './assets/ollama-logo.png'
 import metaLogo from './assets/meta-logo.png'
 import mistralLogo from './assets/mistral-logo.png'
 import agentLogo from './assets/agent-logo.png'
+import ibmGraniteLogo from './assets/IBM-granite-logo.png'
+import qwen3Logo from './assets/qwen3-logo.png'
+import hfLogo from './assets/hf-logo.png'
 
-// NEW: flow diagrams (PNG)
+// flow diagrams (PNG)
 import webcrawlerFlowImg from './assets/webcrawler-flow.png'
 import customerServiceFlowImg from './assets/customerservice-flow.png'
 
@@ -43,34 +47,45 @@ const BASE_HEIGHT = 1800
 
 const LIVE_DEMOS: Record<string,string> = {
   'cust-support': 'http://ec2-98-88-50-46.compute-1.amazonaws.com:3001',
-  'webcrawler': '/demos/openscholar-scientify-demo.html',
+  'grant-generator': '/demos/openscholar-scientify-demo.html',
 }
 
 /* =========================
    Data
 ========================= */
 const flowBlocks: Block[] = [
+  { id:'grant-generator', name:'Grant Generator', Icon:Sparkles, mockDiagram:['Crawler','Parser','Vector DB','Reranker','API'], tags:['ingestion','retrieval'], addedAt:10 },
   { id:'cust-support', name:'AI Customer Service Assistant', Icon:Headphones, mockDiagram:['User UI','Agent','Retriever','Vector DB','LLM'], tags:['assistant','retrieval','nlp'], addedAt:9 },
-  { id:'grant-recommender', name:'Grant Recommender', Icon:BadgeDollarSign, mockDiagram:['Intake','Scoring','Rerank','Report'], tags:['recsys','analytics'], addedAt:7 },
-  { id:'webcrawler', name:'WebCrawler', Icon:Bug, mockDiagram:['Crawler','Parser','Vector DB','Reranker','API'], tags:['ingestion','retrieval'], addedAt:10 },
+  { id:'grant-recommender', name:'Grant Recommender', Icon:ListCheck, mockDiagram:['Intake','Scoring','Rerank','Report'], tags:['recsys','analytics'], addedAt:7 },
   { id:'ticketing', name:'Ticketing System', Icon:Ticket, mockDiagram:['Webhook','Classifier','Router','Knowledge Base'], tags:['workflow','assistant'], addedAt:6 },
-  { id:'doc-parser', name:'Document Parser', Icon:FileText, mockDiagram:['Upload','OCR','Chunker','Embedder','Index'], tags:['ingestion','nlp'], addedAt:8 },
-  { id:'lead-scoring', name:'Lead Scoring', Icon:TrendingUp, mockDiagram:['Events','Features','Model','Score','CRM'], tags:['recsys','analytics'], addedAt:5 },
-  { id:'webhook', name:'Webhook', Icon:WebhookIcon, mockDiagram:['Source','Validator','Transformer','Sink'], tags:['ingestion','workflow'], addedAt:4 },
-  { id:'sentiment', name:'Sentiment Analysis', Icon:Activity, mockDiagram:['Stream','Language ID','Sentiment','Dashboard'], tags:['nlp','analytics'], addedAt:3 },
+  { id:'doc-parser', name:'Document Parser', Icon:FileCog,mockDiagram:['Upload','OCR','Chunker','Embedder','Index'],tags:['ingestion','nlp'], addedAt:14 },
+  { id:'webcrawler', name:'WebCrawler', Icon:Bug,mockDiagram:['Crawler','Parser','Vector DB','Reranker','API'],tags:['ingestion','retrieval'], addedAt:15 },
+  { id:'webhook', name:'Webhook', Icon:WebhookIcon,mockDiagram:['Source','Validator','Transformer','Sink'],tags:['ingestion','workflow'], addedAt:16 },
+  { id:'sentiment', name:'Sentiment Analysis', Icon:Activity,mockDiagram:['Stream','Language ID','Sentiment','Dashboard'],tags:['nlp','analytics'], addedAt:17 },
+  { id:'lead-scoring', name:'Lead Scoring', Icon:TrendingUp, mockDiagram:['Events','Features','Model','Score','CRM'],tags:['recsys','analytics'], addedAt:18 },
+  // New flows
+  { id:'financial-advisor', name:'Financial Advisor', Icon:TrendingUp, mockDiagram:['User Input','Advisor Agent','LLM','Recommendations'], tags:['assistant','finance'], addedAt:11 },
+  { id:'financial-summarizer', name:'Financial Data Summarizer', Icon:FileText, mockDiagram:['Data Import','Summarizer','LLM','Summary Report'], tags:['analytics','finance'], addedAt:12 },
+  { id:'fitness-advisor', name:'Fitness Advisor', Icon:HeartPulse, mockDiagram:['User Input','Plan Generator','Nutrition','Workout'], tags:['health','assistant'], addedAt:13 },
 ]
 
 // ---- Cores split into two sections ----
 const runnerCores: Core[] = [
   { name: 'Meta Llama 3 8B Instruct', logo: metaLogo },
   { name: 'Mistral 7B Instruct V0.2', logo: mistralLogo },
-  { name: 'GPT-OSS 20B',              logo: openaiLogo },
-  { name: 'DeepSeek V3.1',            logo: deepseekLogo },
-  // keep your originals visible in “View More”
-  { name: 'OpenAI GPT-5',             logo: openaiLogo },
-  { name: 'Llama 4 chat',             logo: ollamaLogo },
-  { name: 'Llama 3 instruct',         logo: ollamaLogo },
-  { name: 'Anthropic',                logo: anthropicLogo, invertOnDark:true, large:true },
+  { name: 'GPT-OSS 20B', logo: openaiLogo },
+  { name: 'DeepSeek V3.1', logo: deepseekLogo },
+
+  { name: 'IBM Granite', logo: ibmGraniteLogo },
+  { name: 'Qwen3-Omni', logo: qwen3Logo },
+  { name: 'HF Transformers', logo: hfLogo },
+  { name: 'Whisper-large-v3', logo: openaiLogo }, // swap to Whisper logo if you add one
+  { name: 'Mistral Small', logo: mistralLogo },
+
+  { name: 'OpenAI GPT-5', logo: openaiLogo },
+  { name: 'Llama 4 chat', logo: ollamaLogo },
+  { name: 'Llama 3 instruct', logo: ollamaLogo },
+  { name: 'Anthropic', logo: anthropicLogo, invertOnDark:true, large:true },
 ]
 
 const agentCores: Core[] = [
@@ -160,10 +175,10 @@ export default function App() {
   }, [zoomMode])
   useEffect(() => { const onR=()=>recomputeScale(); window.addEventListener('resize', onR); recomputeScale(); return ()=>window.removeEventListener('resize', onR) }, [recomputeScale, showDemo, dark])
 
-  // helpers (flows) — unchanged
+  // helpers (flows)
   const buildReadme = (flow: Block) => {
     const bullets = flow.mockDiagram.map(s => `- ${s}`).join('\n')
-    return `# ${flow.name} — README (Mock)
+    return `# ${flow.name} — README 
 
 This is a placeholder README for **${flow.name}**.
 Replace with your installation, configuration and usage docs.
@@ -171,16 +186,16 @@ Replace with your installation, configuration and usage docs.
 ## Tags
 ${flow.tags.map(t => '- ' + t).join('\n')}
 
-## Pipeline (mock)
+## Pipeline 
 ${bullets}
 
-## Quick Start (mock)
+## Quick Start 
 1. Install dependencies
 2. Configure environment
 3. Start the dev server
 4. Run the demo`
   }
-  const buildCode = (flow: Block) => `// ${flow.name} — mock code
+  const buildCode = (flow: Block) => `// ${flow.name} - code
 type Step = (input: any) => any
 const pipeline: Step[] = [
   ${flow.mockDiagram.map(s => `// ${s}`).join('\n  ')}
@@ -188,7 +203,7 @@ const pipeline: Step[] = [
 export function run(input: any) {
   return pipeline.reduce((acc, _step) => ({ ...acc, tick:(acc.tick||0)+1 }), { tick:0, input })
 }
-console.log('Running ${flow.name} (mock) ->', run({ foo:'bar' }))`
+console.log('Running ${flow.name} (...) ->', run({ foo:'bar' }))`
 
   /* ---------- Flows UI ---------- */
   function FlowGrid() {
@@ -196,9 +211,9 @@ console.log('Running ${flow.name} (mock) ->', run({ foo:'bar' }))`
       <>
         <div className="spread">
           <div className="row">
-            <button className="btn primary" onClick={()=>alert('(Mock) New Flow')}><Plus size={16}/> New Flow</button>
-            <button className="btn" onClick={()=>alert('(Mock) Import')}><Upload size={16}/> Import</button>
-            <button className="btn" onClick={()=>alert('(Mock) Add to Flow')}><Link2 size={16}/> Add to Flow</button>
+            <button className="btn primary" onClick={()=>alert('New Flow')}><Plus size={16}/> New Flow</button>
+            <button className="btn" onClick={()=>alert('Import')}><Upload size={16}/> Import</button>
+            <button className="btn" onClick={()=>alert('Add to Flow')}><Link2 size={16}/> Add to Flow</button>
           </div>
 
           <div className="row">
@@ -220,8 +235,7 @@ console.log('Running ${flow.name} (mock) ->', run({ foo:'bar' }))`
                     })}
                   </div>
                   <div className="menuFooter">
-                    <button className="btn" onClick={()=>setSelectedTags([])}>Clear</button>
-                    <button className="btn primary" onClick={()=>setFilterOpen(false)}>Apply</button>
+                    <button className="btn" onClick={()=>setSelectedTags([])}>Clear All</button>
                   </div>
                 </div>
               )}
@@ -295,7 +309,8 @@ console.log('Running ${flow.name} (mock) ->', run({ foo:'bar' }))`
       }
     }, [showDeployModal, flow.id])
 
-    const isWebcrawler = flow.id === 'webcrawler'
+    // ✅ FIX: use grant-generator id instead of webcrawler
+    const isGrantGen   = flow.id === 'grant-generator'
     const isCustSupport = flow.id === 'cust-support'
 
     return (
@@ -313,26 +328,26 @@ console.log('Running ${flow.name} (mock) ->', run({ foo:'bar' }))`
         {/* Diagram section */}
         <div className="diagramCard">
           <div className="diagramTitle">Architecture Diagram</div>
-            {(isWebcrawler || isCustSupport) ? (
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <div className="flowImgFrame">
-                  <img
-                    className="flowImg"
-                    src={isWebcrawler ? webcrawlerFlowImg : customerServiceFlowImg}
-                    alt={isWebcrawler ? 'WebCrawler Flow' : 'Customer Service Flow'}
-                  />
-                </div>
+          {(isGrantGen || isCustSupport) ? (
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <div className="flowImgFrame">
+                <img
+                  className="flowImg"
+                  src={isGrantGen ? webcrawlerFlowImg : customerServiceFlowImg}
+                  alt={isGrantGen ? 'Grant Generator Flow' : 'Customer Service Flow'}
+                />
               </div>
-            ) : (
-              <div className="diagramCanvas">
-                {flow.mockDiagram.map((n, i) => (
-                  <React.Fragment key={i}>
-                    <div className="node">{n}</div>
-                    {i < flow.mockDiagram.length - 1 && <div className="arrow">→</div>}
-                  </React.Fragment>
-                ))}
-              </div>
-            )}
+            </div>
+          ) : (
+            <div className="diagramCanvas">
+              {flow.mockDiagram.map((n, i) => (
+                <React.Fragment key={i}>
+                  <div className="node">{n}</div>
+                  {i < flow.mockDiagram.length - 1 && <div className="arrow">→</div>}
+                </React.Fragment>
+              ))}
+            </div>
+          )}
         </div>
 
         {showDeployModal && (
@@ -354,7 +369,7 @@ console.log('Running ${flow.name} (mock) ->', run({ foo:'bar' }))`
                   <div>• Reserving resources…</div>
                   <div>• Loading model weights…</div>
                   <div>• Starting containers…</div>
-                  <div className="ok">✓ Deployment complete (mock)</div>
+                  <div className="ok">✓ Deployment complete </div>
                 </div>
               )}
 
@@ -366,12 +381,12 @@ console.log('Running ${flow.name} (mock) ->', run({ foo:'bar' }))`
                       <div>• Reserving resources…</div>
                       <div>• Loading model weights…</div>
                       <div>• Starting containers…</div>
-                      <div className="ok">✓ Deployment complete (mock). Launching …</div>
+                      <div className="ok">✓ Deployment complete. Launching …</div>
                     </div>
                   )}
                   {livePhase==='live' && (
                     <div className="embedViewport modalViewport" ref={liveViewportRef}>
-                      <div className="embedCanvas" style={{ ['--s' as any]: liveScale }}>
+                      <div className="embedCanvas" style={{ ['--s' as any]: liveScale}}>
                         <iframe className="embedFrame scaled" src={LIVE_DEMOS[flow.id]} title="Live Demo"
                                 loading="lazy" referrerPolicy="no-referrer"
                                 sandbox="allow-scripts allow-same-origin allow-forms allow-popups"/>
@@ -575,7 +590,6 @@ console.log('Running ${flow.name} (mock) ->', run({ foo:'bar' }))`
                 )}
 
                 <div className="muted" style={{ marginTop: 8, fontSize: 12 }}>
-                  
                 </div>
               </>
             )}
