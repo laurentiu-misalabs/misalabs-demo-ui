@@ -69,7 +69,7 @@ body {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 20px;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 1px 3px rgba(0,0,0,.05);
 }
 
@@ -221,12 +221,25 @@ body {
 /* ---------- Menus (Filter / Sort) ---------- */
 .menuWrap { position: relative; }
 .menu {
-  position: absolute; top: calc(100% + 6px); right: 0;
-  background: var(--menu-bg); color: var(--text);
-  border: 1px solid var(--border); border-radius: 12px;
-  min-width: 220px; padding: 10px; box-shadow: var(--menu-shadow);
-  z-index: 20;
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+
+  background: var(--menu-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  min-width: 240px;                 /* a bit wider for long labels */
+  max-height: min(60vh, 420px);     /* never taller than viewport */
+  overflow-y: auto;                 /* scroll when there are many tags */
+  padding: 10px;
+  box-shadow: var(--menu-shadow);
+
+  z-index: 1000;                    /* keep it above everything in the card */
+  scrollbar-gutter: stable;         /* avoid content shift when scrollbar appears */
 }
+
 .menuTitle { font-weight: 700; font-size: 13px; margin: 2px 0 8px; }
 .menuList { display: grid; gap: 6px; }
 .menuCheck { display: flex; gap: 8px; align-items: center; font-size: 13px; }
@@ -235,6 +248,7 @@ body {
   border-radius: 10px; padding: 8px 10px; cursor: pointer;
 }
 .menuItem.active { background: var(--active-bg); }
+.menuFooter .btn { margin-top: 10px;}
 
 /* ---------- Chips ---------- */
 .chipRow { display: flex; gap: 8px; align-items: center; margin: 10px 0 4px; }
@@ -288,7 +302,8 @@ body {
   width: 100%; height: calc(100vh - 180px); overflow: hidden; border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0,0,0,.25); background: var(--panel); margin-top: 8px;
 }
-.modalViewport { height: 70vh; }
+
+.modalViewport { height: 80vh; padding: 8px;}
 .embedCanvas { --s: 0.85; transform: scale(var(--s)); transform-origin: top left; width: calc(100% / var(--s)); height: calc(100% / var(--s)); min-height: calc(600px / var(--s)); }
 .embedFrame.scaled { display: block; width: 100%; height: 100%; border: 0; background: var(--embed-bg); }
 
@@ -419,3 +434,4 @@ body {
   /* subtle pop so lines read better on the light card */
   filter: brightness(1.06) contrast(1.06) saturate(1.03);
 }
+
